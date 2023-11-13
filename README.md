@@ -84,7 +84,8 @@ Prediction results on the DeepLoc dataset:
   ![DeepLoc predictions](assets/deeploc_animation.gif)
 
 Prediction results on the Oxford RobotCar dataset:
-  
+
+  ![Oxford RobotCar predictions](assets/robotcar_results_5x.gif)
 
 ### References
 
