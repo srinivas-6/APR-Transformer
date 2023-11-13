@@ -1,4 +1,4 @@
-## Learning Ego Pose Regression using Multi-Camera with Transformers
+## Employing Transformer-based Pose Regression to establish the initial localization state with enhanced accuracy and efficiency
 
 ![Model architecture](assets/apr-tranformer.drawio.png)
 
@@ -7,9 +7,7 @@
 
 This code implements:
 
-1. Training of a Transformer-based architecture for absolute ego pose regression
-2. Testing the same model against various datasets 
-
+Training of a Transformer-based architecture for absolute ego pose regression used for enhancing the initial pose required for localization algorithms. 
 
 ---
 
@@ -21,7 +19,8 @@ In order to run this repository you will need:
 2. Set up the conda environment with ```conda env create -f environment.yml```
 3. Benchmarking on various datasets
 3. Download the [DeepLoc dataset](http://deeploc.cs.uni-freiburg.de/)
-4. Download the Oxford Robot Car dataset [Oxford Robot Car](https://robotcar-dataset.robots.ox.ac.uk/) or use the [RobustLoc](https://github.com/sijieaaa/RobustLoc) project that provide the Oxford RobotCar dataset that has been [pre-processed](https://github.com/sijieaaa/RobustLoc) 
+4. Download the Oxford Robot Car dataset [Oxford Robot Car](https://robotcar-dataset.robots.ox.ac.uk/) 
+5. We use the [RobustLoc](https://github.com/sijieaaa/RobustLoc) project that provides the Oxford RobotCar dataset that has been [pre-processed](https://github.com/sijieaaa/RobustLoc) 
 
 
 ### Pretrained Models 
@@ -33,20 +32,23 @@ TBD
   ```
   python main.py -h
   ```
-  For example, in order to train the model on the DeepLoc dataset or Beintelli run: 
+  For example, in order to train the model on the DeepLoc or Oxford RobotCar datasets  run: 
   ```
-python main.py --model_name=ms-transposenet --config_file=LocationRetrival_config.json --mode=train --experiment {EXP_NAME} --entity {WANDB_USERNAME}
+python main.py --model_name apr-transformer --mode train --config_file config/RobotCar_config_aprtransformer.json --experiment {EXP_NAME} --entity {WANDB_USERNAME}
   ```
+
+  ```
+python main.py --model_name apr-transformer --mode train --config_file config/DeepLoc_config_aprtransformer.json   --experiment {EXP_NAME} --entity {WANDB_USERNAME}
+  ```  
   Your checkpoints (.pth file saved based on the number you specify in the configuration file) and log file
   will be saved under an 'out' folder.
 
   **You will need a wandb account for logging the training metrics. Please pass your wandb username for the 'entity' flag**
-
   
   
   In order to test your model:
   ```
-  python main.py --model_name=ms-transposenet --backbone_path=efficientnet --config_file=LocationRetrival_config.json --mode=test --checkpoint_path <path to your checkpoint .pth> --experiment {EXP_NAME} --entity {WANDB_USERNAME}
+  python main.py --model_name apr-transformer --mode test --config_file config/DeepLoc_config_aprtransformer.json --checkpoint_path <path to your checkpoint .pth> --experiment {EXP_NAME} --entity {WANDB_USERNAME}
   ```
 
   Convert the trained pytorch model checkpoint to onnx for deployment
@@ -54,7 +56,7 @@ python main.py --model_name=ms-transposenet --config_file=LocationRetrival_confi
   python torch_to_onnx.py --help
 
   ```
-  Run inference on the converted onnx model
+  Test inference on the converted onnx model
   
   ```
   python inference.py --help
@@ -67,3 +69,10 @@ python main.py --model_name=ms-transposenet --config_file=LocationRetrival_confi
 
 TBD
   
+
+### References
+
+1. [DeepLoc](http://deeploc.cs.uni-freiburg.de/)
+2. [Oxford Robot Car](https://robotcar-dataset.robots.ox.ac.uk/)
+3. [RobustLoc: Robust Visual Localization in Changing Conditions](https://github.com/sijieaaa/RobustLoc)
+4. [MS-Transformer: Learning Multi-Scene Camera Pose Regression with Transformers](https://github.com/yolish/multi-scene-pose-transformer)
