@@ -22,8 +22,32 @@ In order to run this repository you will need:
 4. Download the Oxford Robot Car dataset [Oxford Robot Car](https://robotcar-dataset.robots.ox.ac.uk/) 
 5. We use the [RobustLoc](https://github.com/sijieaaa/RobustLoc) project that provides the Oxford RobotCar dataset that has been [pre-processed](https://github.com/sijieaaa/RobustLoc) 
 
+### Data Preparation
+ ```
+📦data
+  ┣ 📦DeepLoc
+    ┣ 📂train
+    ┃ ┣ 📂LeftImages
+    ┃ ┣ 📂labels
+    ┃ ┣ 📂labels_colorized
+    ┃ ┣ 📜poses.txt
+    ┣ 📂test
+    ┃ ┣ 📂LeftImages
+    ┃ ┣ 📂labels
+    ┃ ┣ 📂labels_colorized
+    ┃ ┣ 📜poses.txt
+    ┣ 📜pose_meta.txt
+  
+  📦RobotCar
+    ┣ 📂loop
+    ┃ ┣ 📂2014-06-23-15-36-04
+    ┃ ┣ 📂2014-06-23-15-41-25
+    ┃ ┣ 📂2014-06-26-08-53-56
+    ┃ ┣ 📂2014-06-26-09-24-58
+  📦RobotCar_poses
+ ```
 
-### Pretrained Models 
+### Checkpoints 
 TBD
 
 ### Usage
@@ -51,23 +75,15 @@ python main.py --model_name apr-transformer --mode train --config_file config/De
   python main.py --model_name apr-transformer --mode test --config_file config/DeepLoc_config_aprtransformer.json --checkpoint_path <path to your checkpoint .pth> --experiment {EXP_NAME} --entity {WANDB_USERNAME}
   ```
 
-  Convert the trained pytorch model checkpoint to onnx for deployment
-  ```
-  python torch_to_onnx.py --help
-
-  ```
-  Test inference on the converted onnx model
-  
-  ```
-  python inference.py --help
-
-  ```
-
   
   
 ### Results
 
-TBD
+Prediction results on the DeepLoc dataset:
+
+  ![DeepLoc predictions](assets/deeploc_animation.gif)
+
+Prediction results on the Oxford RobotCar dataset:
   
 
 ### References
