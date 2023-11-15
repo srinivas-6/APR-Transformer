@@ -1,16 +1,27 @@
 ## Employing Transformer-based Pose Regression to establish the initial localization state with enhanced accuracy and efficiency
 
 ![Model architecture](assets/apr-tranformer.drawio.png)
-
-
+ 
 ### Repository Overview 
 
 This code implements:
 
-Training of a Transformer-based architecture for absolute ego pose regression used for enhancing the initial pose required for localization algorithms. 
+Training of a Transformer-based architecture for absolute ego pose regression used for enhancing the initial pose required for localization algorithms. This project is part of the [Autoware Challenge 2023](https://autoware.org/autoware-challenge-2023/).  
+
+[Presentation slides](https://docs.google.com/presentation/d/1vFl92lTybFowQvPHCWioYIUxFiz-KnqajVDfiVc4UJg/edit?usp=sharing)
 
 ---
+### Results
 
+Prediction results on the DeepLoc dataset:
+
+  ![DeepLoc predictions](assets/deeploc_animation.gif)
+
+Prediction results on the Oxford RobotCar dataset:
+
+  ![Oxford RobotCar predictions](assets/robotcar_results_5x.gif)
+
+  
 ### Prerequisites
 
 In order to run this repository you will need:
@@ -71,7 +82,7 @@ python main.py --model_name apr-transformer --mode train --config_file config/De
   Your checkpoints (.pth file saved based on the number you specify in the configuration file) and log file
   will be saved under an 'out' folder.
 
-  **You will need a wandb account for logging the training metrics. Please pass your wandb username for the 'entity' flag**
+  **You will need a wandb account to log the training metrics. Please pass your wandb username for the 'entity' flag**
   
   
   In order to test your model:
@@ -79,20 +90,12 @@ python main.py --model_name apr-transformer --mode train --config_file config/De
   python main.py --model_name apr-transformer --mode test --config_file config/DeepLoc_config_aprtransformer.json --checkpoint_path <path to your checkpoint .pth> --experiment {EXP_NAME} --entity {WANDB_USERNAME}
   ```
 
-  
-  
-### Results
-
-Prediction results on the DeepLoc dataset:
-
-  ![DeepLoc predictions](assets/deeploc_animation.gif)
-
-Prediction results on the Oxford RobotCar dataset:
-
-  ![Oxford RobotCar predictions](assets/robotcar_results_5x.gif)
-
 ### Upcoming Additions to the Repository
 Following the publication of our work, we will be incorporating the extensive APR-BeIntelli dataset, which includes multi-camera images with corresponding pose labels and semantic masks. Furthermore, the repository will include checkpoints to the APR-Seg-Transformer model, reinforcing its utility for pose regression and semantic segmentation tasks. 
+
+**TODO**
+1. Add integration code into Autoware.universe setup
+ 
 
 ### Code References
 
