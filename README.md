@@ -47,12 +47,16 @@ In order to run this repository you will need:
   📦RobotCar_poses
  ```
 
-### Checkpoints 
-TBD
+### Model Checkpoints 
+
+| Dataset        | Position Error | Orientation Error          | Download  | Logs |  
+| :-------------: |:-------------:| :-----:| :-----:| :-----:|
+| DeepLoc     |0.81 m  |3.35 deg  | [model](https://tubcloud.tu-berlin.de/s/7JnSqyiY4YQzmkf)| [train](https://tubcloud.tu-berlin.de/s/Ldq4doj4aGwZ5qT), [test](https://tubcloud.tu-berlin.de/s/yMHHjsc2eXmZQEo)
+| OxfordRobot Car |3.34 m  |1.04 deg | [model](https://tubcloud.tu-berlin.de/s/FnZmCNmnxpbzFj7)| [train](https://tubcloud.tu-berlin.de/s/xdrTQsTxYSbY72F), [test](https://tubcloud.tu-berlin.de/s/QQKonGJ5PYkDbo2)
 
 ### Usage
 
-  For detailed explanation of the options run:)
+  For a detailed explanation of the options run:)
   ```
   python main.py -h
   ```
