@@ -91,7 +91,10 @@ Prediction results on the Oxford RobotCar dataset:
 
   ![Oxford RobotCar predictions](assets/robotcar_results_5x.gif)
 
-### References
+### Upcoming Additions to the Repository
+Following the publication of our work, we will be incorporating the extensive APR-BeIntelli dataset, which includes multi-camera images with corresponding pose labels and semantic masks. Furthermore, the repository will include checkpoints to the APR-Seg-Transformer model, reinforcing its utility for pose regression and semantic segmentation tasks. 
+
+### Code References
 
 1. [DeepLoc](http://deeploc.cs.uni-freiburg.de/)
 2. [Oxford Robot Car](https://robotcar-dataset.robots.ox.ac.uk/)
