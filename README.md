@@ -94,9 +94,8 @@ python main.py --model_name apr-transformer --mode train --config_file config/De
 Following the publication of our work, we will be incorporating the extensive APR-BeIntelli dataset, which includes multi-camera images with corresponding pose labels and semantic masks. Furthermore, the repository will include checkpoints to the APR-Seg-Transformer model, reinforcing its utility for pose regression and semantic segmentation tasks. 
 
 **TODO**
-1. Add integration code into Autoware.universe setup
+ Add integration code into Autoware.universe setup
  
-
 ### Code References
 
 1. [DeepLoc](http://deeploc.cs.uni-freiburg.de/)
