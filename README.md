@@ -6,7 +6,7 @@
 
 This code implements:
 
-Training of a Transformer-based architecture for absolute ego pose regression used for enhancing the initial pose required for localization algorithms. This project is part of the [Autoware Challenge 2023](https://autoware.org/autoware-challenge-2023/).  
+Training of a Transformer-based architecture for absolute ego pose regression used for enhancing the initial pose required for localization algorithms. This work was submitted to the [Autoware Challenge 2023](https://autoware.org/autoware-challenge-2023/) and is part of the ongoing research project [BeIntelli](https://be-intelli.com/) at TU-Berlin, Germany.  
 
 [Presentation slides](https://docs.google.com/presentation/d/1vFl92lTybFowQvPHCWioYIUxFiz-KnqajVDfiVc4UJg/edit?usp=sharing)
 
