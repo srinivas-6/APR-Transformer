@@ -67,7 +67,7 @@ In order to run this repository you will need:
 
 ### Usage
 
-  For a detailed explanation of the options run:)
+  For a detailed explanation of the options run:
   ```
   python main.py -h
   ```
