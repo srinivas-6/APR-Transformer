@@ -33,6 +33,8 @@ class BackboneBase(nn.Module):
 class Backbone(BackboneBase):
     def __init__(self, pre_backbone: str, reduction):
         backbone = EfficientNet.from_pretrained(pre_backbone)
+        backbone._conv_stem.in_channels = 2
+        backbone._conv_stem.weight = torch.nn.Parameter(backbone._conv_stem.weight[:, :2, :, :])
         super().__init__(backbone, reduction)
 
 
