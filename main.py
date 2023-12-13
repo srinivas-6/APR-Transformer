@@ -10,6 +10,7 @@ from util import utils
 import time
 from datasets.DeepLoc import DeepLocDataset
 from datasets.RobotCar import RobotCar
+from datasets.RadarRobotCar import RadarRobotCar
 from datasets.APRSegDataset import APRSegDataset
 from datasets.APRDataset import APRDataset
 from models.pose_losses import CameraPoseLoss, cross_entropy2d
@@ -114,24 +115,31 @@ if __name__ == "__main__":
         scheduler = torch.optim.lr_scheduler.StepLR(optim,
                                                     step_size=config.get('lr_scheduler_step_size'),
                                                     gamma=config.get('lr_scheduler_gamma'))
-
-        transform = utils.train_transforms.get('baseline')
-        mask_transform = utils.train_transforms.get('mask_transforms')
-        logging.info(f'transforms: {transform}')
-        
         if config.get('dataset') == 'APR_Beintelli':
-            dataset = APRDataset(config, mode=args.mode, transforms=transform)
-            logging.info("[Using camera type -{}], with total samples {}".format(dataset.cam_type, len(dataset)))
+            if config.get('modality') == 'image':
+                transform = utils.train_transforms.get('baseline')
+                dataset = APRDataset(config, mode=args.mode, transforms=transform)
+                logging.info("[Using camera type -{}], with total samples {}".format(dataset.cam_type, len(dataset)))
+            elif config.get('modality') == 'lidar':
+                transform = utils.train_transforms.get('lidar')
+                dataset = APRDataset(config, mode=args.mode, transforms=transform)
+                logging.info("[Using modality type -{}], with total samples {}".format(dataset.modality, len(dataset)))
         elif config.get('dataset') == 'APR_Seg_Beintelli':
+            transform = utils.train_transforms.get('baseline')
+            mask_transform = utils.train_transforms.get('mask_transforms')
             dataset = APRSegDataset(config, mode=args.mode, transforms=transform, mask_transforms=mask_transform)
             logging.info("[Using camera type -{}], with total samples {}".format(dataset.cam_type, len(dataset)))
         elif config.get('dataset') == 'DeepLoc':
+            transform = utils.train_transforms.get('baseline')
             dataset = DeepLocDataset(config,mode=args.mode,transforms=transform)
+            logging.info(f'transforms: {transform}')
         elif config.get('dataset') == 'RobotCar':
             dataset = RobotCar(scene='loop', data_path='./data', train=True, 
                        config={'cropsize': 128, 'random_crop': True, 'subseq_length': 1, 'skip': 10},
                        transform=utils.train_transforms.get('robotcar'), target_transform=utils.train_transforms.get('target_transforms'), real=False)
-    
+        elif config.get('dataset') == 'RadarRobotCar':
+            dataset = RadarRobotCar(config, mode=args.mode)
+        
         loader_params = {'batch_size': config.get('batch_size'),
                                   'shuffle': True,
                                   'num_workers': config.get('n_workers')}
@@ -231,25 +239,34 @@ if __name__ == "__main__":
         model.eval()
 
         # Set the dataset and data loader
-        transform = utils.test_transforms.get('baseline')
-        mask_transform = None
+
         loader_params = {'batch_size': 1,
                          'shuffle': False,
                          'num_workers': config.get('n_workers')}
         if config.get('dataset') == 'APR_Beintelli':
-            dataset = APRDataset(config, mode=args.mode, transforms=transform)
-            logging.info("[Using camera type -{}], with total samples {}".format(dataset.cam_type, len(dataset)))
+            if config.get('modality') == 'image':
+                transform = utils.test_transforms.get('baseline')
+                dataset = APRDataset(config, mode=args.mode, transforms=transform)
+                logging.info("[Using camera type -{}], with total samples {}".format(dataset.cam_type, len(dataset)))
+            elif config.get('modality') == 'lidar':
+                transform = utils.test_transforms.get('lidar')
+                dataset = APRDataset(config, mode=args.mode, transforms=transform)
+                logging.info("[Using modality type -{}], with total samples {}".format(dataset.modality, len(dataset)))
         elif config.get('dataset') == 'APR_Seg_Beintelli':
+            transform = utils.test_transforms.get('baseline')
+            mask_transform = None
             dataset = APRSegDataset(config, mode=args.mode, transforms=transform, mask_transforms=mask_transform)
             logging.info("[Using camera type -{}], with total samples {}".format(dataset.cam_type, len(dataset)))
         elif config.get('dataset') == 'DeepLoc':
+            transform = utils.test_transforms.get('baseline')
             dataset = DeepLocDataset(config,mode=args.mode,transforms=transform)
         elif config.get('dataset') == 'RobotCar':
            dataset = RobotCar(scene='loop', data_path='./data', train=False, 
                        config={'cropsize': 128, 'random_crop': False, 'subseq_length': 1, 'skip': 10},
                        transform=utils.train_transforms.get('robotcar'), target_transform=utils.train_transforms.get('target_transforms'), real=False)      
+        elif config.get('dataset') == 'RadarRobotCar':
+            dataset = RadarRobotCar(config, mode=args.mode)
         dataloader = torch.utils.data.DataLoader(dataset, **loader_params)
-        
         stats = np.zeros((len(dataloader.dataset), 3))
         preds = []
         targets = []
@@ -299,6 +316,7 @@ if __name__ == "__main__":
             wandb.log({'Median pose error [m]': np.nanmedian(stats[:, 0])})
             wandb.log({'Median orient error [deg]': np.nanmedian(stats[:, 1])})
             wandb.log({'inference time': np.mean(stats[:, 2])})
+
         # plot targets and predictions
         visualize_pose(preds,targets)
         # write predictions to file for plotting / animation
@@ -316,7 +334,8 @@ if __name__ == "__main__":
         logging.info("Performance of {}".format(args.checkpoint_path))
         logging.info("Median pose error: {:.3f}[m], {:.3f}[deg]".format(np.nanmedian(stats[:, 0]), np.nanmedian(stats[:, 1])))
         logging.info("Mean inference time:{:.2f}[ms]".format(np.mean(stats[:, 2])))
-
+        logging.info(" Mean pose error: {:.3f}[m], {:.3f}[deg]".format(
+                    np.nanmean(stats[:, 0]),  np.nanmean(stats[:, 1])))
         
         
 
