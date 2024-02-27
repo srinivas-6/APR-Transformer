@@ -346,7 +346,7 @@ def train_model(model, config, args):
             if (epoch % n_freq_checkpoint) == 0 and epoch > 0:
                 torch.save(model.state_dict(), checkpoint_prefix + '_checkpoint-{}.pth'.format(epoch))
 
-        print(f"Current S_x: {pose_loss.s_x} | Current S_q: {pose_loss.s_q};")
+        print(f"Current S_x: {pose_loss.s_x[0]} | Current S_q: {pose_loss.s_q[0]};")
 
         # Scheduler Update:
         scheduler.step()
