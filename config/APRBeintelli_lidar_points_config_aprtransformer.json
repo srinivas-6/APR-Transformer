@@ -3,7 +3,8 @@
 		"n_freq_print": 5,
 		"n_freq_checkpoint": 10,
 		"n_workers": 2,
-		"device_id": "cuda:0"
+		"device_id": "cuda:0",
+                "validate_model": true
 	},
 	"apr-transformer-pointnet":
 	{

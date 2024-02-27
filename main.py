@@ -332,10 +332,8 @@ def train_model(model, config, args):
             model.train() 
 
             # ...
-            if median_pose_error_in_m < best_pose_error_in_m:
-
-                print("\n--- SAVE BEST MODEL: ", checkpoint_prefix + '_checkpoint-{}.pth'.format(epoch), " ---")
-                torch.save(model.state_dict(), checkpoint_prefix + '_checkpoint-{}.pth'.format(epoch))
+            print("\n--- SAVE MODEL: ", checkpoint_prefix + '_checkpoint-{}.pth'.format(epoch), " ---")
+            torch.save(model.state_dict(), checkpoint_prefix + '_checkpoint-{}.pth'.format(epoch))
 
         else:
             # Save Checkpoint:
@@ -573,7 +571,7 @@ if __name__ == "__main__":
 # --model_name apr-transformer 
 # --mode train 
 # --config_file config/APRBeintelli_lidar_config_aprtransformer.json 
-# --experiment daigpu3-test 
-# --entity gojourney
+# --experiment <experiment-name> 
+# --entity <wb-username>
 
-# python main.py --model_name apr-transformer-pointnet --mode train --config_file config/APRBeintelli_lidar_points_config_aprtransformer.json --experiment daigpu3-test --entity gojourney
+# python main.py --model_name apr-transformer-pointnet --mode train --config_file config/APRBeintelli_lidar_points_config_aprtransformer.json --experiment <experiment-name> --entity <wb-username>
