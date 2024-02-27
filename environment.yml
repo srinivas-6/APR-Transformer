@@ -206,4 +206,6 @@ dependencies:
     - wrapt==1.15.0
     - yarl==1.9.2
     - zc-lockfile==3.0.post1
+    - fpsample==0.3.1
+    - einops==0.7.0
 prefix: /home/tp3/miniconda3/envs/pose-transformer
