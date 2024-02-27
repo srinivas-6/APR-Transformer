@@ -1,0 +1,57 @@
+{
+	"general": {
+		"n_freq_print": 5,
+		"n_freq_checkpoint": 10,
+		"n_workers": 2,
+		"device_id": "cuda:0"
+	},
+	"apr-transformer-pointnet":
+	{
+		"backbone": "pointnet",
+		"backbone_ckpt": "./models/aprpointtransformer/ckpt/pointnet_backbone/S3DIS/best_model.pth",
+		"batch_size": 16,
+		"num_scenes": 1,
+		"learnable": true,
+		"s_x": -9.5,
+		"s_q": -3.5,
+		"lr": 1e-4,
+		"norm": 2,
+		"weight_decay": 1e-6,
+		"eps": 1e-10,
+		"lr_scheduler_gamma": 0.1,
+		"lr_scheduler_step_size": 200,
+		"n_epochs": 20,
+		"proj_t": "conv1d",
+		"proj_rot": "conv1d",
+		"num_t_encoder_layers": 6,
+		"num_t_decoder_layers": 6,
+		"num_rot_encoder_layers": 6,
+		"num_rot_decoder_layers": 6,
+		"dim_feedforward": 256,
+		"hidden_dim":384,
+		"dropout": 0.2,
+		"nheads": 4,
+		"reduction_map": {"out": 128},
+        "reduction": ["out", "out"],
+		"dimension_aligned_position_embedding": true,
+		"aligned_embedding_dimensions": [8, 8, 16],
+		"freeze": false,
+		"freeze_exclude_phrase": ["regressor_head_t", "transformer_t"],
+		"no_augment": true,
+		"use_propagation": true
+	},
+	"dataset": 
+	{
+		"dataset": "APR_Beintelli",
+		"root_dir": "./data/APR_Beintelli",
+		"modality": "lidar",
+		"lidar_features": "points",
+		"down_sample_transform": "fps",
+		"n_pre-process_workers": 8,
+		"pre-process": true,
+		"val_split": 0.0
+	}
+
+	
+}
+

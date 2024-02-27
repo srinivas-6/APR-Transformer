@@ -28,7 +28,6 @@ def show_prediction(img, pred, colors, background=0):
     im = np.array(img, np.uint8)
     set_img_color(im, pred, colors, background)
     out = np.array(im)
-
     return out
 
 
@@ -204,6 +203,8 @@ train_transforms = {
                                     transforms.ToTensor(),
                                     transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                                              std=[0.229, 0.224, 0.225])]),
+    'lidar': transforms.Compose([transforms.ToTensor(),
+                                    transforms.Normalize(mean=0.5, std=1)]),
 
     'robotcar': transforms.Compose([
                                     transforms.ColorJitter(0.5, 0.3, 0.5, 0.2),

@@ -1,5 +1,6 @@
 from .posenet.PoseNet import PoseNet
 from  .aprtransformer.APRTransformer import APRTransformer
+from  .aprpointtransformer.APRTransformer import APRPointTransformer # INSERTED;
 from .dinotransposenet.DinoTransPoseNet import DinoTransPoseNet
 from .dino.DinoResNet import DINOPoseNet
 
@@ -14,6 +15,8 @@ def get_model(model_name, config=None):
         return PoseNet(config)
     elif model_name == 'apr-transformer':
         return APRTransformer(config)
+    elif model_name == 'apr-transformer-pointnet':
+        return APRPointTransformer(config)
     elif model_name == 'dino-posenet':
         return DINOPoseNet(config)
     elif model_name == 'dino-transformer':
