@@ -4,7 +4,8 @@
 		"n_freq_checkpoint": 10,
 		"n_workers": 2,
 		"device_id": "cuda:0",
-                "validate_model": true
+                "validate_model": true,
+                "val_batch_size": 16
 	},
 	"apr-transformer-pointnet":
 	{
