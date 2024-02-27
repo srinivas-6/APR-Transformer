@@ -9,7 +9,6 @@
 	"apr-transformer-pointnet":
 	{
 		"backbone": "pointnet",
-		"backbone_ckpt": "./models/aprpointtransformer/ckpt/pointnet_backbone/SemanticKITTI/best_model.pth",
 		"mode": "train",
 		"batch_size": 16,
 		"num_scenes": 1,
@@ -21,8 +20,8 @@
 		"weight_decay": 1e-4,
 		"eps": 1e-10,
 		"lr_scheduler_gamma": 0.1,
-		"lr_scheduler_step_size": 50,
-		"n_epochs": 100,
+		"lr_scheduler_step_size": 60,
+		"n_epochs": 150,
 		"proj_t": "conv1d",
 		"proj_rot": "conv1d",
 		"num_t_encoder_layers": 6,

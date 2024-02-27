@@ -209,14 +209,20 @@ def train_model(model, config, args):
     
     # ...
     model, pose_loss, optim, scheduler, device, freeze = setup_training_model_loss_optimizer(model, config)
-    
+    print(f"Start S_x: {pose_loss.s_x[0]} | Start S_q: {pose_loss.s_q[0]};")
+
     # ...
     dataloader = setup_training_dataloader(args, config)  
 
     if "validate_model" in config.keys() and config.get("validate_model"):
 
-        val_dataloader = setup_test_dataloader(config, mode="test")
-        best_pose_error_in_m = np.inf
+        if "val_root_dir" in config.keys():
+            val_config = config.copy()
+            val_config["root_dir"] = val_config["val_root_dir"]
+            val_dataloader = setup_test_dataloader(config, mode="train")
+            
+        else:
+            val_dataloader = setup_test_dataloader(config, mode="test")
 
     # Extract Training Details from Config:
     n_freq_print = config.get("n_freq_print")
@@ -238,7 +244,7 @@ def train_model(model, config, args):
         n_samples = 0
         
         for batch_idx, minibatch in enumerate(dataloader):
-
+            
             for k, v in minibatch.items():
                 minibatch[k] = v.to(device)
             
@@ -328,17 +334,19 @@ def train_model(model, config, args):
         if "validate_model" in config.keys() and config.get("validate_model"):
         
             print(f"\n--- EVAL MODEL AFTER ITERATION: {epoch} ---\n")
-            median_pose_error_in_m, median_pose_error_in_deg = eval_model(model, config, dataloader = val_dataloader, mode = "test") 
+            median_pose_error_in_m, median_pose_error_in_deg = eval_model(model, config, args, dataloader = val_dataloader, mode = "test") 
             model.train() 
 
             # ...
-            print("\n--- SAVE MODEL: ", checkpoint_prefix + '_checkpoint-{}.pth'.format(epoch), " ---")
+            print("\n--- SAVE BEST MODEL: ", checkpoint_prefix + '_checkpoint-{}.pth'.format(epoch), " ---")
             torch.save(model.state_dict(), checkpoint_prefix + '_checkpoint-{}.pth'.format(epoch))
 
         else:
             # Save Checkpoint:
             if (epoch % n_freq_checkpoint) == 0 and epoch > 0:
                 torch.save(model.state_dict(), checkpoint_prefix + '_checkpoint-{}.pth'.format(epoch))
+
+        print(f"Current S_x: {pose_loss.s_x} | Current S_q: {pose_loss.s_q};")
 
         # Scheduler Update:
         scheduler.step()
@@ -355,16 +363,16 @@ def setup_test_dataloader(config, mode: str = "test"):
             
         if config.get('modality') == 'image':
             transform = utils.test_transforms.get('baseline')
-            dataset = APRDataset(config, mode=mode, transforms=transform)
+            dataset = APRDataset(config, mode=mode, img_transforms=transform)
                 
             logging.info("[Using camera type -{}], with total samples {}".format(dataset.cam_type, len(dataset)))
         
         elif config.get('modality') == 'lidar':
             transform = None
-            dataset = APRDataset(config, mode=mode, transforms=transform)
+            dataset = APRDataset(config, mode=mode, points_transforms=transform)
             
             logging.info("[Using modality type -{}], with total samples {}".format(dataset.modality, len(dataset)))
-        
+
     elif config.get('dataset') == 'APR_Seg_Beintelli':
         transform = utils.test_transforms.get('baseline')
         mask_transform = None
@@ -393,7 +401,7 @@ def setup_test_dataloader(config, mode: str = "test"):
     
     return dataloader
     
-def eval_model(model, config, dataloader = None, mode = "test"):
+def eval_model(model, config, args, dataloader = None, mode = "test"):
     
     # Set Model to Eval Mode:
     model.eval()
