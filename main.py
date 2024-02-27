@@ -567,11 +567,8 @@ if __name__ == "__main__":
         eval_model(model, config, args)
         
 
-# python main.py 
-# --model_name apr-transformer 
-# --mode train 
-# --config_file config/APRBeintelli_lidar_config_aprtransformer.json 
-# --experiment <experiment-name> 
-# --entity <wb-username>
-
+# Train model with APRBeIntelli dataset:
 # python main.py --model_name apr-transformer-pointnet --mode train --config_file config/APRBeintelli_lidar_points_config_aprtransformer.json --experiment <experiment-name> --entity <wb-username>
+
+# Train model with RadarRobotCar dataset:
+# python main.py --model_name apr-transformer-pointnet --mode train --config_file config/RadarRobotCar_lidar_points_config_aprtransformer.json --experiment <experiment-name> --entity <wb-username>
