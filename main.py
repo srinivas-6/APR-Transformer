@@ -16,6 +16,7 @@ import time
 # ...
 import numpy as np
 import torch
+from torch.cuda.amp import GradScaler, autocast
 
 import matplotlib.pyplot as plt
 import wandb
@@ -68,6 +69,8 @@ def parse_config():
     
     arg_parser.add_argument("--experiment", help="a short string to describe the experiment")
     arg_parser.add_argument('--entity', default=None, help='Username of your weights and biases account')
+
+    arg_parser.add_argument('--amp', default="false", choices=("false", "float16", "bfloat16"), help='use Automatic Mixed Precision with given dtype')
     
     args = arg_parser.parse_args()
     
@@ -236,6 +239,11 @@ def train_model(model, config, args):
         
     loss_vals = []
     sample_count = []
+
+    # Mixed Precision Training
+    amp_enabled = args.amp != "false"
+    amp_dtype = torch.bfloat16 if args.amp == "bfloat16" else torch.float16
+    grad_scaler = GradScaler(enabled=amp_enabled)
     
     for epoch in range(n_epochs):
         
@@ -293,16 +301,17 @@ def train_model(model, config, args):
             
             # Zero the Gradients:
             optim.zero_grad()
-                
-            # Forward Pass to estimate the Pose:
-            if freeze:
-                res = model.forward_heads(transformers_res)
-            else:
-                res = model(minibatch)
-                
-            # Compute Pose Loss:
-            est_pose = res.get('pose')
-            criterion = pose_loss(est_pose, gt_pose)
+            
+            with autocast(amp_enabled, dtype=amp_dtype):
+                # Forward Pass to estimate the Pose:
+                if freeze:
+                    res = model.forward_heads(transformers_res)
+                else:
+                    res = model(minibatch)
+                    
+                # Compute Pose Loss:
+                est_pose = res.get('pose')
+                criterion = pose_loss(est_pose, gt_pose)
             
             # Collect for Recoding and Plotting:
             running_loss += criterion.item()
@@ -311,8 +320,10 @@ def train_model(model, config, args):
             sample_count.append(n_total_samples)
             
             # Back Propagation (update Model weights):
+            criterion = grad_scaler.scale(criterion)
             criterion.backward()
-            optim.step()
+            grad_scaler.step(optim)
+            grad_scaler.update()
             
             wandb.log({'lr': optim.param_groups[0]["lr"]})
 
@@ -553,7 +564,6 @@ if __name__ == "__main__":
         torch.backends.cudnn.deterministic = True
         torch.backends.cudnn.benchmark = False
         device_id = config.get('device_id')
-        
     else:
         device_id = 'cpu'
     
