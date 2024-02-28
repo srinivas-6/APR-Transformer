@@ -320,8 +320,7 @@ def train_model(model, config, args):
             sample_count.append(n_total_samples)
             
             # Back Propagation (update Model weights):
-            criterion = grad_scaler.scale(criterion)
-            criterion.backward()
+            grad_scaler.scale(criterion).backward()
             grad_scaler.step(optim)
             grad_scaler.update()
             
