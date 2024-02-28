@@ -4,13 +4,13 @@
 		"n_workers": 4,
 		"device_id": "cuda",
 		"validate_model": true,
-		"val_batch_size": 32
+		"val_batch_size": 24
 	},
 	"apr-transformer-pointnet":
 	{
 		"backbone": "pointnet",
 		"mode": "train",
-		"batch_size": 32,
+		"batch_size": 24,
 		"num_scenes": 1,
 		"learnable": true,
 		"s_x": -3.0,
