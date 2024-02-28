@@ -1,8 +1,8 @@
 {
 	"general": {
 		"n_freq_print": 50,
-		"n_workers": 2,
-		"device_id": "cuda:0",
+		"n_workers": 4,
+		"device_id": "cuda",
 		"validate_model": true,
 		"val_batch_size": 16
 	},
