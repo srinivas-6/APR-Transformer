@@ -198,13 +198,13 @@ def setup_training_model_loss_optimizer(model, config):
     # ...
     return model, pose_loss, optim, scheduler, device, freeze
     
-def compute_posit_and_orient_error(config, dataloader, est_pose, gt_pose):
+def compute_posit_and_orient_error(config, dataloader, est_pose, gt_pose, device):
 
     # ...
     gt_pose, est_pose = denormalize_gt_and_est_poses(config, dataloader, est_pose, gt_pose)
     
     # ...
-    posit_err, orient_err = utils.pose_err(torch.from_numpy(est_pose), torch.from_numpy(gt_pose))           
+    posit_err, orient_err = utils.pose_err(torch.from_numpy(est_pose).to(device), torch.from_numpy(gt_pose).to(device))           
     return posit_err, orient_err
     
     
@@ -313,11 +313,12 @@ def train_model(model, config, args):
                 est_pose = res.get('pose')
                 criterion = pose_loss(est_pose, gt_pose)
             
-            # Collect for Recoding and Plotting:
-            running_loss += criterion.item()
-                
-            loss_vals.append(criterion.item())
-            sample_count.append(n_total_samples)
+            if not torch.isinf(criterion) and not torch.isnan(criterion):
+                # Collect for Recoding and Plotting:
+                running_loss += criterion.item()
+                    
+                loss_vals.append(criterion.item())
+                sample_count.append(n_total_samples)
             
             # Back Propagation (update Model weights):
             grad_scaler.scale(criterion).backward()
@@ -330,7 +331,7 @@ def train_model(model, config, args):
             if batch_idx % n_freq_print == 0:
                     
                 # ...
-                posit_err, orient_err = compute_posit_and_orient_error(config, dataloader, est_pose, gt_pose)
+                posit_err, orient_err = compute_posit_and_orient_error(config, dataloader, est_pose, gt_pose, device)
                    
                 # ...
                 logging.info("[Batch-{}/Epoch-{}] running loss: {:.3f},"

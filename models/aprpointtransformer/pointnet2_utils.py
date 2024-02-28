@@ -86,55 +86,30 @@ def farthest_point_sample(xyz, npoint):
     return centroids
 
 
-def query_ball_point(radius, nsample, xyz, new_xyz):
+def query_ball_point(radius, nsample, xyz, new_xyz, fps_idx):
     """
     Input:
         radius: local region radius
         nsample: max sample number in local region
         xyz: all points, [B, N, 3]
         new_xyz: query points, [B, S, 3]
+        fps_idx: farthest point sampling
     Return:
         group_idx: grouped points index, [B, S, nsample]
     """
-
-    device = xyz.device
-    B, N, C = xyz.shape
-    _, S, _ = new_xyz.shape
-
-    radius_scale = 2
-
-    group_idx = torch.arange(N, dtype=torch.long).to(device).view(1, 1, N).repeat([B, S, 1])
+    B = xyz.shape[0]
+    S = new_xyz.shape[1]
     sqrdists = square_distance(new_xyz, xyz)
-    group_idx[sqrdists > radius ** radius_scale] = N
-    group_idx = group_idx.sort(dim=-1)[0][:, :, :nsample]
 
-    group_first = group_idx[:, :, 0].view(B, S, 1).repeat([1, 1, nsample])
-    mask = group_idx == N
+    # 按照距离升序排序
+    sqrdists, sqrdists_idx = sqrdists.sort(dim=-1)
+    sqrdists = sqrdists[:, :, :nsample]
+    sqrdists_idx = sqrdists_idx[:, :, :nsample]
+    query_self = fps_idx.view(B, S, 1).repeat([1, 1, nsample])
+    mask = sqrdists > radius ** 2
+    sqrdists_idx[mask] = query_self[mask]
 
-    # TODO: FIND A BETTER SOLUTION:
-    # START OF TEMPORARY SOLUTION: --------------------------------------------------
-    while(True):
-
-        if torch.sum((group_first[mask] == N)) == 0:
-            break
-
-        group_idx = torch.arange(N, dtype=torch.long).to(device).view(1, 1, N).repeat([B, S, 1])
-
-        radius_scale *= 0.95
-
-        sqrdists = square_distance(new_xyz, xyz)
-
-        group_idx[sqrdists > radius ** radius_scale] = N
-        group_idx = group_idx.sort(dim=-1)[0][:, :, :nsample]
-
-        group_first = group_idx[:, :, 0].view(B, S, 1).repeat([1, 1, nsample])
-        mask = group_idx == N
-
-    # --------------------------------------------------: END OF TEMPORARY SOLUTION;
-    # POSSIBLE SOLUTION: SET NEW RADIUS VALUES in 'PointNetAbstraction'-Call in PointNet-Backbone;
-
-    group_idx[mask] = group_first[mask]
-    return group_idx
+    return sqrdists_idx
 
 
 def sample_and_group(npoint, radius, nsample, xyz, points, returnfps=False):
@@ -153,7 +128,7 @@ def sample_and_group(npoint, radius, nsample, xyz, points, returnfps=False):
     S = npoint
     fps_idx = farthest_point_sample(xyz, npoint) # [B, npoint, C]
     new_xyz = index_points(xyz, fps_idx)
-    idx = query_ball_point(radius, nsample, xyz, new_xyz)
+    idx = query_ball_point(radius, nsample, xyz, new_xyz, fps_idx)
     grouped_xyz = index_points(xyz, idx) # [B, npoint, nsample, C]
     grouped_xyz_norm = grouped_xyz - new_xyz.view(B, S, 1, C)
 
@@ -265,11 +240,12 @@ class PointNetSetAbstractionMsg(nn.Module):
 
         B, N, C = xyz.shape
         S = self.npoint
-        new_xyz = index_points(xyz, farthest_point_sample(xyz, S))
+        fps_idx = farthest_point_sample(xyz, S)
+        new_xyz = index_points(xyz, fps_idx)
         new_points_list = []
         for i, radius in enumerate(self.radius_list):
             K = self.nsample_list[i]
-            group_idx = query_ball_point(radius, K, xyz, new_xyz)
+            group_idx = query_ball_point(radius, K, xyz, new_xyz, fps_idx)
             grouped_xyz = index_points(xyz, group_idx)
             grouped_xyz -= new_xyz.view(B, S, 1, C)
             if points is not None:
