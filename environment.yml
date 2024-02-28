@@ -1,4 +1,4 @@
-name: pose-transformer
+name: APR-Transformer
 channels:
   - conda-forge
   - defaults
@@ -208,4 +208,4 @@ dependencies:
     - zc-lockfile==3.0.post1
     - fpsample==0.3.1
     - einops==0.7.0
-prefix: /home/tp3/miniconda3/envs/pose-transformer
+# prefix: /home/tp3/miniconda3/envs/pose-transformer

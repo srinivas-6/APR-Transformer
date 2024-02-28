@@ -1,0 +1,102 @@
+# see https://docs.gitlab.com/ce/ci/yaml/README.html for all available options
+
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+  TRAIN_LOG_DIR: "/home/gitlab-runner/runs/$CI_PROJECT_NAME/$CI_JOB_ID-$CI_JOB_NAME"
+  SUBMISSION: "submission_${CI_JOB_ID}.csv"
+  EXPERIMENT_NAME: "${CI_PROJECT_NAME}"
+  CONDA_PATH: /home/gitlab-runner/miniconda3
+
+.conda_setup: &conda_setup
+  before_script:
+    # get system hardware/software information
+    - lshw -short -c memory -c processor -c network -c storage -c volume -c disk
+    - uname -a
+    - df -h -x squashfs -x tmpfs -x devtmpfs
+    - du -sh ..
+
+    - nvidia-smi
+    - export N_GPUS=$(nvidia-smi -L | wc -l)
+
+    # setup conda env
+    - export PATH="${CONDA_PATH}/bin:$PATH"
+    - export MPLBACKEND=AGG
+    - export TORCH_HOME=/home/gitlab-runner/.cache/torch
+    - conda update -n base -c defaults conda
+    - conda env remove --prefix ${CONDA_PATH}/envs/$CI_PROJECT_NAME
+    - conda env update --prefix ${CONDA_PATH}/envs/$CI_PROJECT_NAME
+    - source activate ${CONDA_PATH}/envs/$CI_PROJECT_NAME
+    - python trainer/utils/collect_env.py
+
+.train_job_common: &train_job_common
+  <<: *conda_setup
+  stage: train
+  coverage: '/Metric Score = \d+\.\d+/'
+  timeout: 1w
+  artifacts:
+    name: "$CI_JOB_STAGE-$CI_COMMIT_REF_NAME"
+    paths:
+      - train_log
+      - test_results
+      - $SUBMISSION
+      - $SUBMISSION.zip
+      - $SUBMISSION.7z
+  only:
+    variables:
+      - $CI_COMMIT_REF_NAME == $CI_JOB_NAME
+
+.test_job_common: &test_job_common
+  <<: *conda_setup
+  stage: test
+  only:
+    variables:
+      - $CI_COMMIT_REF_NAME == $CI_JOB_NAME
+  timeout: 1d
+  artifacts:
+    name: "$CI_JOB_STAGE-$CI_COMMIT_REF_NAME"
+    paths:
+      - test_results
+      - $SUBMISSION
+      - $SUBMISSION.zip
+      - $SUBMISSION.7z
+
+
+before_script:
+  # get system hardware/software information
+  - lshw -short -c memory -c processor -c network -c storage -c volume -c disk
+  - uname -a
+  - df -h -x squashfs -x tmpfs -x devtmpfs
+  - du -sh ..
+
+after_script:
+  - pwd
+  - echo $TRAIN_LOG_DIR
+#  - cp -r $TRAIN_LOG_DIR train_log
+#  - 7z a $SUBMISSION.7z $SUBMISSION -sdel
+
+stages:
+  - wakeup
+  - train
+  - test
+
+wakeup_runner:
+  stage: wakeup
+  tags:
+    - wakeup
+  except:
+    - master
+  script:
+    - RUNNER_TAG=`echo $CI_COMMIT_REF_NAME | rev | cut -d "_" -f 1 | rev`
+    - echo "wakeonlan $RUNNER_TAG"
+    - wake_${RUNNER_TAG}
+
+
+##########################################
+train_hedong:
+  <<: *train_job_common
+  tags:
+    - hedong
+  script:
+    - ln -s /media/data data
+    - python main.py --model_name apr-transformer-pointnet --mode train --config_file config/RadarRobotCar_lidar_points_config_aprtransformer.json --experiment $CI_JOB_ID-$CI_JOB_NAME
