@@ -98,4 +98,4 @@ train_hedong:
     - hedong
   script:
     - ln -s /media/data data
-    - python main.py --model_name apr-transformer-pointnet --mode train --amp=float16 --config_file config/RadarRobotCar_lidar_points_config_aprtransformer.json --experiment $CI_JOB_ID-$CI_JOB_NAME
+    - python main.py --model_name apr-transformer-pointnet --mode train --amp=false --config_file config/RadarRobotCar_lidar_points_config_aprtransformer.json --experiment $CI_JOB_ID-$CI_JOB_NAME
