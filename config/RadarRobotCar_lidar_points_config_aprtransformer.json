@@ -1,6 +1,6 @@
 {
 	"general": {
-		"n_freq_print": 50,
+		"n_freq_print": 200,
 		"n_workers": 4,
 		"device_id": "cuda",
 		"validate_model": true,
@@ -15,7 +15,7 @@
 		"learnable": true,
 		"s_x": -3.0,
 		"s_q": -6.5,
-		"lr": 1e-4,
+		"lr": 1e-3,
 		"norm": 2,
 		"weight_decay": 1e-4,
 		"eps": 1e-10,
