@@ -99,3 +99,12 @@ train_hedong:
   script:
     - ln -s /media/data data
     - python main.py --model_name apr-transformer-pointnet --mode train --amp=false --config_file config/RadarRobotCar_lidar_points_config_aprtransformer.json --experiment $CI_JOB_ID-$CI_JOB_NAME
+
+##########################################
+train_gpu9-2:
+  <<: *train_job_common
+  tags:
+    - hedong
+  script:
+    - ln -s /home/demo/data data
+    - python main.py --model_name apr-transformer-pointnet --mode train --amp=false --config_file config/RadarRobotCar_lidar_points_config_aprtransformer.json --experiment $CI_JOB_ID-$CI_JOB_NAME
