@@ -9,3 +9,5 @@ dependencies:
   - pytorch=2.2
   - torchvision
   - pytorch-cuda=12.1
+  - pip:
+    - chardet
