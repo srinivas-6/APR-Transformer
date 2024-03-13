@@ -23,9 +23,9 @@ variables:
     - export PATH="${CONDA_PATH}/bin:$PATH"
     - export MPLBACKEND=AGG
     - export TORCH_HOME=/home/gitlab-runner/.cache/torch
-    # - conda update -n base -c defaults conda
-    # - conda env remove --prefix ${CONDA_PATH}/envs/$CI_PROJECT_NAME
-    # - conda env update --prefix ${CONDA_PATH}/envs/$CI_PROJECT_NAME
+    - conda update -n base -c defaults conda
+    - conda env remove --prefix ${CONDA_PATH}/envs/$CI_PROJECT_NAME
+    - conda env update --prefix ${CONDA_PATH}/envs/$CI_PROJECT_NAME
     - source activate ${CONDA_PATH}/envs/$CI_PROJECT_NAME
 
 .train_job_common: &train_job_common
