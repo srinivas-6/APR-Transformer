@@ -85,6 +85,7 @@ wakeup_runner:
     - wakeup
   except:
     - master
+    - gpu9-2
   script:
     - RUNNER_TAG=`echo $CI_COMMIT_REF_NAME | rev | cut -d "_" -f 1 | rev`
     - echo "wakeonlan $RUNNER_TAG"
