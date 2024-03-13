@@ -6,6 +6,6 @@ channels:
   - defaults
 dependencies:
   - python=3.11
-  - pytorch
+  - pytorch==2.2
   - torchvision
   - pytorch-cuda=12.1
