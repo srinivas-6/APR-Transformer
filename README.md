@@ -4,7 +4,12 @@
 ![Image Model architecture](assets/APR-Transformer-Image.png)
 
 ### LiDAR input Architecture
-![LiDAR Model architecture](assets/APR-Transformer-Lidar.png)
+
+Raw LiDAR points as input
+![LiDAR Model architecture](assets/APR-Transformer-Lidar-Points.png)
+
+LiDAR as Histogram 
+![LiDAR Model architecture](assets/APR-Transformer-Lidar-Histogram.png)
  
 ### Repository Overview 
 
